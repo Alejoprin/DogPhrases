@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./assets/faviconDog.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>Dog-Phrases</title>
+
+    <style>
+        html{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body{
+            font-family: 'Roboto Mono', monospace;
+            margin: 0;
+            padding: 0;
+        }
+
+        main{
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            justify-content: space-evenly;
+            align-items: center;
+
+            background-image: url('./assets/background.jpg');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .background-img{
+            width: 350px;
+        }
+
+        article{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 900px;
+            height: 750px;
+            border-radius: 20px;
+            padding-bottom: 10px;
+            backdrop-filter: blur(20px);
+        }
+
+        figure{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+            
+        }
+
+        .title, .phrase{
+            color: aliceblue;
+        }
+
+        .dog-img{
+            width: 650px;
+            height: 450px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 20px 1px rgba(20, 1, 47,  0.5);
+        }
+
+        .phrase{
+            text-align: center;
+        }
+
+        .btn-wrapper{
+            display: flex;
+            align-items: center;
+            width: 120px;
+            margin: 0 auto;
+        }
+
+        .circle-btn{
+            display: grid;
+            place-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+
+            box-shadow: 2px 2px 20px 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .animation-btn{
+            animation: nextDog 1s ease-in-out forwards;
+        }
+
+        @keyframes nextDog {
+            0%, 100%{
+                transform: translateX(0px);
+            }
+
+            50%{
+                transform: translateX(30px);
+                background-color: #f8de6f;
+                box-shadow: 2px 2px 10px 2px rgba(255,223, 103, 0.3);
+            }
+        }
+
+        .line{
+            width: 30px;
+            height: 5px;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-bottom-right-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1 class="title">Dog-Phrases</h1>
+
+        <article>
+            <figure>
+                <img class="dog-img" src="" alt="dog image">
+                <h3 class="phrase"></h3>
+            </figure>
+
+            <div class="btn-wrapper">
+                <button class="circle-btn">🐶</button>
+                <div class="line"></div>
+            </div>
+        </article>
+
+    </main>
+
+
+    <script>
+        const dog_base_URL = 'https://dog.ceo/api/breeds/image/random'
+        const phrase_base_URL = 'https://api.adviceslip.com/advice'
+
+        const $imgDog = document.querySelector('.dog-img')
+        const $phrase = document.querySelector('.phrase')
+        const $circleBtn = document.querySelector('.circle-btn')
+
+        async function getDataDog() {
+            try {
+                const res = await fetch(dog_base_URL)
+
+                const data = await res.json()
+
+                $imgDog.src = data.message
+
+                if(!res.ok) throw { status: res.status, statusText: res.statusText }
+
+            } catch (err) {
+                let message = err.status || 'Ocurrio un error al tratar de cargar la imagen'
+                $phrase.textContent = `${err.status}: ${message}`
+            }
+        }
+
+        async function getDataPhrase() {
+            try {
+                const res = await fetch(phrase_base_URL)
+    
+                const data = await res.json()
+    
+                $phrase.textContent = data.slip.advice
+
+                if(!res.ok) throw { status: res.status, statusText: res.statusText }
+                
+            } catch (error) {
+                let message = err.status || 'Ocurrio un error al tratar de cargar la imagen'
+                $phrase.textContent = `${err.status}: ${message}`
+            }
+        }
+        
+        getDataDog()
+        getDataPhrase()
+        
+        $circleBtn.addEventListener('click', e => {
+            getDataDog()
+            getDataPhrase()
+
+            $circleBtn.classList.add('animation-btn')
+
+            setTimeout(()=>{
+                $circleBtn.classList.remove('animation-btn')
+            },1000)            
+        })
+        
+    </script>
+</body>
+</html>
